@@ -44,26 +44,22 @@ try:
   while True:
     # Read a line from the serial port
     ser_in_header = ser.read(STBP_HEADER_S.sizeof())
-    print(ser_in_header)
     prim_header = STBP_HEADER_S.parse(ser_in_header)
-    print(prim_header)
+
     if prim_header.SECH == 0b1:
       print("Reading secondary header")
       ser_in_secheader = ser.read(STBP_SECH.sizeof())
       secheader = STBP_SECH.parse(ser_in_secheader)
-      print(secheader)
+
     ser_in_userdata = ser.read(STBP_RTD.sizeof())
-    print(ser_in_userdata)
-    print(STBP_RTD.sizeof())
     userdata = STBP_RTD.parse(ser_in_userdata)
 
     ser_in_crc = ser.read(STBP_CRC.sizeof())
-    print(ser_in_crc)
-    print(STBP_CRC.sizeof())
     crc = STBP_CRC.parse(ser_in_crc)
 
     # Print the received line
     print(prim_header)
+    print(secheader)
     print(userdata)
     print(crc)
 
