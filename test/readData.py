@@ -22,13 +22,21 @@ STBP_RTD = Struct(
   "RTDSensor1Channel2" / Int24ul,
 )
 
-STBP_CRC = Struct(
-  "CRC" / Int16ul
+STBP_ADC = Struct(
+  "ADC0" / Int16ul,
+  "ADC1" / Int16ul,
+  "ADC2" / Int16ul,
+  "ADC3" / Int16ul,
+  "ADC4" / Int16ul,
+  "ADC5" / Int16ul,
+  "ADC6" / Int16ul,
+  "ADC7" / Int16ul,
+  "ADC8" / Int16ul,
+  "ADC9" / Int16ul
 )
 
-STBP_DATA = Struct(
-  "SECH" / STBP_SECH,
-  "STBP_RTD" / STBP_RTD
+STBP_CRC = Struct(
+  "CRC" / Int16ul
 )
 
 # Define the serial port and baud rate
@@ -51,8 +59,12 @@ try:
       ser_in_secheader = ser.read(STBP_SECH.sizeof())
       secheader = STBP_SECH.parse(ser_in_secheader)
 
-    ser_in_userdata = ser.read(STBP_RTD.sizeof())
-    userdata = STBP_RTD.parse(ser_in_userdata)
+    if prim_header.APID == 2:
+      ser_in_userdata = ser.read(STBP_RTD.sizeof())
+      userdata = STBP_RTD.parse(ser_in_userdata)
+    else:
+      ser_in_userdata = ser.read(STBP_ADC.sizeof())
+      userdata = STBP_ADC.parse(ser_in_userdata)
 
     ser_in_crc = ser.read(STBP_CRC.sizeof())
     crc = STBP_CRC.parse(ser_in_crc)

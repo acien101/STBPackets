@@ -24,9 +24,12 @@
 
 // Define specific Data Field User Packets
 
-#define STBP_TM_RTDDATA_LENGTH_B 18
+#define STBP_TM_RTDDATA_LENGTH_B 18   // Bytes
 #define STBP_TM_RTDDATA_OFFSET 24     // Offset in bits of each element
 
+#define STBP_TM_IADCDATA_LENGTH_B 20 // Bytes
+#define STBP_TM_IADCDATA_NUM_ELEMENTS 10 // 16 bits * 10 elements
+#define STBP_TM_IADCDATA_BYTES_ELEMENT 2
 
 // Define ENUMS
 
@@ -44,6 +47,7 @@ typedef enum {
   STBP_APID_TM_LSDATA = 0,
   STBP_APID_TM_MUXDATA = 1,
   STBP_APID_TM_RTDDATA = 2,
+  STBP_APID_TM_IADCDATA = 3,        // Internal ADC Data
 } STBP_APID_TM_E;  // APID ENUM
 
 // Structures types
@@ -72,6 +76,7 @@ class STBPacket {
     uint8_t setSecHeader(STBP_SECH_S secHeader);
     void setRTDData(uint32_t rtd0ch0, uint32_t rtd0ch1, uint32_t rtd0ch2, 
                     uint32_t rtd1ch0, uint32_t rtd1ch1, uint32_t rtd1ch2);
+    void setInternalADCData(uint16_t* adcData);
     uint8_t setUserData(uint8_t* data, size_t size);
     uint8_t buildPacket(uint8_t* dst);
   private:

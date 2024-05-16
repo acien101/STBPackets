@@ -97,6 +97,18 @@ void STBPacket::setRTDData(uint32_t rtd0ch0, uint32_t rtd0ch1, uint32_t rtd0ch2,
   memcpy(mv_p++, &rtd1ch2, sizeof(uint24_t));
 }
 
+/**
+ * Set the data of the internal ADC Data. param adcData is an array of 10 variables.
+*/
+void STBPacket::setInternalADCData(uint16_t* adcData){
+  uint16_t* mv_p = (uint16_t*) userDataBuff;
+  memset(mv_p, 0, STBP_TM_IADCDATA_LENGTH_B);
+
+  for(uint8_t i = 0; i < STBP_TM_IADCDATA_NUM_ELEMENTS; i++){
+    memcpy(mv_p++, adcData++, STBP_TM_IADCDATA_BYTES_ELEMENT);
+  }
+}
+
 uint16_t STBPacket::gen_checksum(uint8_t const *data, int size) {     
   uint16_t sum = 0;
   size_t even_size = size - size%2;
