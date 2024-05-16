@@ -50,14 +50,21 @@ uint8_t STBPacket::getUserDataLength(){
 */
 uint8_t STBPacket::buildPacket(uint8_t* dst){
   uint8_t* dst_p = dst;   // Moving pointer
-  memcpy(dst_p, (uint8_t *) &primHeader, STBP_HEADER_LENGTH_B);
+
+  // Build primary header
+  uint16_t header_c = (primHeader.type << STBP_TYPE_OFFSET) |
+                    (primHeader.apid << STBP_APID_OFFSET) |
+                    (primHeader.sech << STBP_SECH_OFFSET) |
+                     primHeader.length;
+
+  memcpy(dst_p, &header_c, STBP_HEADER_LENGTH_B);
   dst_p += STBP_HEADER_LENGTH_B;
 
   // TODO if there is a secondary header
 
-  memcpy(dst_p, (uint8_t *) &secHeader, STBP_SECHEADER_LENGTH_B);
+  memcpy(dst_p, &secHeader, STBP_SECHEADER_LENGTH_B);
   dst_p += STBP_SECHEADER_LENGTH_B;
-  memcpy(dst_p, (uint8_t *) &userDataBuff, getUserDataLength());
+  memcpy(dst_p, &userDataBuff, getUserDataLength());
   dst_p += STBP_SECHEADER_LENGTH_B;
 
   return 0;
@@ -65,8 +72,23 @@ uint8_t STBPacket::buildPacket(uint8_t* dst){
 
 void STBPacket::setRTDData(uint32_t rtd0ch0, uint32_t rtd0ch1, uint32_t rtd0ch2, 
                     uint32_t rtd1ch0, uint32_t rtd1ch1, uint32_t rtd1ch2){
+  
 
-  //this->userDataBuff
+  // Structure of RTD Data User Data Field
+  //   RTDSensor0Channel0 - 24 Bits
+  //   RTDSensor0Channel1 - 24 Bits
+  //   RTDSensor0Channel2 - 24 Bits
+  //   RTDSensor1Channel0 - 24 Bits
+  //   RTDSensor1Channel1 - 24 Bits
+  //   RTDSensor1Channel2 - 24 Bits
 
-  // TODO COPY THE DATA
+  uint24_t* mv_p = (uint24_t*) userDataBuff;
+  memset(mv_p, 0, STBP_TM_RTDDATA_LENGTH_B);
+
+  memcpy(mv_p++, &rtd0ch0, sizeof(uint24_t));
+  memcpy(mv_p++, &rtd0ch1, sizeof(uint24_t));
+  memcpy(mv_p++, &rtd0ch2, sizeof(uint24_t));
+  memcpy(mv_p++, &rtd1ch0, sizeof(uint24_t));
+  memcpy(mv_p++, &rtd1ch1, sizeof(uint24_t));
+  memcpy(mv_p++, &rtd1ch2, sizeof(uint24_t));
 }

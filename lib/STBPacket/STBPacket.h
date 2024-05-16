@@ -15,17 +15,17 @@
 #define STBP_SECH_SIZE 1        // Bits
 #define STBP_LENGTH_SIZE 8      // Bits
 
-// Define MASKS
-#define STBP_TYPE_MASK 0x4000
-#define STBP_APID_MASK 0x7E00
-#define STBP_SECH_MASK 0x1000
-#define STBP_LENGTH_MASK 0xFF
-
 // Define OFFSETS
 #define STBP_TYPE_OFFSET 15
 #define STBP_APID_OFFSET 9
 #define STBP_SECH_OFFSET 8
 #define STBP_LENGTH_OFFSET 0
+
+// Define specific Data Field User Packets
+
+#define STBP_TM_RTDDATA_LENGTH_B 18
+#define STBP_TM_RTDDATA_OFFSET 24     // Offset in bits of each element
+
 
 // Define ENUMS
 
@@ -48,15 +48,17 @@ typedef enum {
 // Structures types
 
 typedef struct STBP_HEADER_S{
-  uint8_t type : 1;
-  uint8_t apid : 6;
-  uint8_t sech : 1;
-  uint8_t length;
+  uint8_t type : 1;     // 0:1
+  uint8_t apid : 6;     // 1:7
+  uint8_t sech : 1;     // 7:8
+  uint8_t length;       // 8:15
 } STBP_HEADER_S;  // Header STRUCTURE
 
 typedef struct STBP_SECH_S{
   unsigned long time;
 } STBP_SECH_S;  // Secondary Header Structure
+
+typedef unsigned char uint24_t[3];
 
 class STBPacket {
     STBP_HEADER_S primHeader;

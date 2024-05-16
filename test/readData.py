@@ -1,25 +1,25 @@
 import serial
-from construct import Struct, BitStruct, BitsInteger, Int32ul
+from construct import *
 
 # Create data structures
-STBP_HEADER_S = BitStruct(
+STBP_HEADER_S = ByteSwapped(BitStruct(
   "TYPE" / BitsInteger(1),
   "APID" / BitsInteger(6),
   "SECH" / BitsInteger(1),
   "LENGTH" / BitsInteger(8)
-)
+))
 
 STBP_SECH = Struct(
   "TIME" / Int32ul
 )
 
-STBP_RTD = BitStruct(
-  "RTDSensor0Channel0" / BitsInteger(24),
-  "RTDSensor0Channel1" / BitsInteger(24),
-  "RTDSensor0Channel2" / BitsInteger(24),
-  "RTDSensor1Channel0" / BitsInteger(24),
-  "RTDSensor1Channel1" / BitsInteger(24),
-  "RTDSensor1Channel2" / BitsInteger(24),
+STBP_RTD = Struct(
+  "RTDSensor0Channel0" / Int24ul,
+  "RTDSensor0Channel1" / Int24ul,
+  "RTDSensor0Channel2" / Int24ul,
+  "RTDSensor1Channel0" / Int24ul,
+  "RTDSensor1Channel1" / Int24ul,
+  "RTDSensor1Channel2" / Int24ul,
 )
 
 STBP_DATA = Struct(
@@ -40,13 +40,22 @@ try:
   while True:
     # Read a line from the serial port
     ser_in_header = ser.read(STBP_HEADER_S.sizeof())
+    print(ser_in_header)
     prim_header = STBP_HEADER_S.parse(ser_in_header)
-    ser_in_data = ser.read(prim_header.LENGTH + 1)
-    data_packet = STBP_DATA.parse(ser_in_data)
+    print(prim_header)
+    if prim_header.SECH == 0b1:
+      print("Reading secondary header")
+      ser_in_secheader = ser.read(STBP_SECH.sizeof())
+      secheader = STBP_SECH.parse(ser_in_secheader)
+      print(secheader)
+    ser_in_userdata = ser.read(STBP_RTD.sizeof())
+    print(ser_in_userdata)
+    print(STBP_RTD.sizeof())
+    userdata = STBP_RTD.parse(ser_in_userdata)
 
     # Print the received line
     print(prim_header)
-    print(data_packet)
+    print(userdata)
 
 except KeyboardInterrupt:
   # Close the serial port when Ctrl+C is pressed

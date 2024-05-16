@@ -46,9 +46,9 @@ Structure of user data field "1" - Mux Board data:
 * TBD
 
 Structure of user data field "2" - RTDs data:
-* RTDSensor0Channel0 - 24 Bits
-* RTDSensor0Channel1 - 24 Bits
-* RTDSensor0Channel2 - 24 Bits
-* RTDSensor1Channel0 - 24 Bits
-* RTDSensor1Channel1 - 24 Bits
-* RTDSensor1Channel2 - 24 Bits
+* RTDSensor0Channel0 - 32 Bits
+* RTDSensor0Channel1 - 32 Bits
+* RTDSensor0Channel2 - 32 Bits
+* RTDSensor1Channel0 - 32 Bits
+* RTDSensor1Channel1 - 32 Bits
+* RTDSensor1Channel2 - 32 Bits
