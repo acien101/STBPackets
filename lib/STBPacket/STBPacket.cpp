@@ -60,20 +60,24 @@ uint8_t STBPacket::buildPacket(uint8_t* dst){
   memcpy(dst_p, &header_c, STBP_HEADER_LENGTH_B);
   dst_p += STBP_HEADER_LENGTH_B;
 
-  // TODO if there is a secondary header
+  if(primHeader.sech){
+    memcpy(dst_p, &secHeader, STBP_SECHEADER_LENGTH_B);
+    dst_p += STBP_SECHEADER_LENGTH_B;
+  }
 
-  memcpy(dst_p, &secHeader, STBP_SECHEADER_LENGTH_B);
-  dst_p += STBP_SECHEADER_LENGTH_B;
-  memcpy(dst_p, &userDataBuff, getUserDataLength());
-  dst_p += STBP_SECHEADER_LENGTH_B;
+  uint8_t userDataLength = getUserDataLength();
+  memcpy(dst_p, &userDataBuff, userDataLength);
+  dst_p += userDataLength;
+
+  // Add the checksum
+  uint16_t crc = gen_checksum(dst, dst_p - dst);
+  memcpy(dst_p, &crc, STBP_CRC_LENGTH_B);
 
   return 0;
 }
 
 void STBPacket::setRTDData(uint32_t rtd0ch0, uint32_t rtd0ch1, uint32_t rtd0ch2, 
                     uint32_t rtd1ch0, uint32_t rtd1ch1, uint32_t rtd1ch2){
-  
-
   // Structure of RTD Data User Data Field
   //   RTDSensor0Channel0 - 24 Bits
   //   RTDSensor0Channel1 - 24 Bits
@@ -91,4 +95,16 @@ void STBPacket::setRTDData(uint32_t rtd0ch0, uint32_t rtd0ch1, uint32_t rtd0ch2,
   memcpy(mv_p++, &rtd1ch0, sizeof(uint24_t));
   memcpy(mv_p++, &rtd1ch1, sizeof(uint24_t));
   memcpy(mv_p++, &rtd1ch2, sizeof(uint24_t));
+}
+
+uint16_t STBPacket::gen_checksum(uint8_t const *data, int size) {     
+  uint16_t sum = 0;
+  size_t even_size = size - size%2;
+  for (int i = 0; i < even_size; i+=2) {
+    sum += data[i] + 256 * data[i+1];
+  }
+  if (even_size < size) {
+    sum += data[size-1];
+  }
+  return sum;
 }

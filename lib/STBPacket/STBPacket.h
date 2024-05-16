@@ -8,6 +8,7 @@
 // Define LENGTH
 #define STBP_HEADER_LENGTH_B 2    // Bytes
 #define STBP_SECHEADER_LENGTH_B 4 // Bytes
+#define STBP_CRC_LENGTH_B 2 // Bytes
 
 // Define sizes
 #define STBP_TYPE_SIZE 1        // Bits
@@ -75,6 +76,7 @@ class STBPacket {
     uint8_t buildPacket(uint8_t* dst);
   private:
     uint8_t getUserDataLength();
+    uint16_t gen_checksum(uint8_t const *data, int size);
 };
 
 #endif /* STBPacket_H */

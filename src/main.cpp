@@ -20,7 +20,7 @@ void setup() {
 
   STBP_SECH_S secHeader = {micros()};
 
-  uint8_t packet_buff[STBP_HEADER_LENGTH_B + STBP_SECHEADER_LENGTH_B + STBP_TM_RTDDATA_LENGTH_B] = {0};
+  uint8_t packet_buff[STBP_HEADER_LENGTH_B + STBP_SECHEADER_LENGTH_B + STBP_TM_RTDDATA_LENGTH_B + STBP_CRC_LENGTH_B] = {0};
 
   STBPacket myPacket = STBPacket(primHeader, secHeader);
   //myPacket.setUserData(RTDsData, sizeof(RTDsData));

@@ -26,6 +26,7 @@ Secondary header:
 The PACKET DATA field is defined as:
 * Packet Secondary header
 * USER DATA FIELD
+* CRC - 16 Bits - CRC of the packet
 
 The user data field can have different shapes, depends on the APID:
 * 0 - Load switches data - Data collected from the Load Switches.

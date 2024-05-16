@@ -22,13 +22,17 @@ STBP_RTD = Struct(
   "RTDSensor1Channel2" / Int24ul,
 )
 
+STBP_CRC = Struct(
+  "CRC" / Int16ul
+)
+
 STBP_DATA = Struct(
   "SECH" / STBP_SECH,
   "STBP_RTD" / STBP_RTD
 )
 
 # Define the serial port and baud rate
-serial_port = '/dev/tty.usbmodem1461303'  # Change this to the appropriate port on your system
+serial_port = '/dev/tty.usbmodem1461403'  # Change this to the appropriate port on your system
 baud_rate = 9600  # Change this to match the baud rate of your device
 
 # Create a serial object
@@ -53,9 +57,15 @@ try:
     print(STBP_RTD.sizeof())
     userdata = STBP_RTD.parse(ser_in_userdata)
 
+    ser_in_crc = ser.read(STBP_CRC.sizeof())
+    print(ser_in_crc)
+    print(STBP_CRC.sizeof())
+    crc = STBP_CRC.parse(ser_in_crc)
+
     # Print the received line
     print(prim_header)
     print(userdata)
+    print(crc)
 
 except KeyboardInterrupt:
   # Close the serial port when Ctrl+C is pressed
