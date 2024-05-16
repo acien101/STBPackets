@@ -31,6 +31,8 @@
 #define STBP_TM_IADCDATA_NUM_ELEMENTS 10 // 16 bits * 10 elements
 #define STBP_TM_IADCDATA_BYTES_ELEMENT 2
 
+#define STBP_TM_LSDATA_LENGTH_B 2    // Bytes
+
 // Define ENUMS
 
 typedef enum {
@@ -77,6 +79,7 @@ class STBPacket {
     void setRTDData(uint32_t rtd0ch0, uint32_t rtd0ch1, uint32_t rtd0ch2, 
                     uint32_t rtd1ch0, uint32_t rtd1ch1, uint32_t rtd1ch2);
     void setInternalADCData(uint16_t* adcData);
+    void setLSData(uint16_t data);
     uint8_t setUserData(uint8_t* data, size_t size);
     uint8_t buildPacket(uint8_t* dst);
   private:

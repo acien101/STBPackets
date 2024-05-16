@@ -11,7 +11,7 @@ The features are:
 
 ## Structure of the packets
 
-This packets are a simpler version of CCSDS packets, taking some useful structures.
+This packets are a simpler version of CCSDS packets, taking some useful structures. It is understood that the most significant bit is transmitted first. Bit 0 is refered to the Most Significant Bit.
 
 Header structure:
 * TYPE - 1 Bit - Defines if is 0 Telemetry, or 1 Telecommand.
@@ -42,6 +42,14 @@ Structure of user data field "0" - Load switches data:
 * LS5 - 1 Bit
 * LS6 - 1 Bit
 * LS7 - 1 Bit
+* LS8 - 1 Bit
+* LS9 - 1 Bit
+* LS10 - 1 Bit
+* LS11 - 1 Bit
+* LS12 - 1 Bit
+* PADDING - 1 Bit
+* PADDING - 1 Bit
+* PADDING - 1 Bit
 
 Structure of user data field "1" - Mux Board data:
 * TBD
@@ -53,3 +61,15 @@ Structure of user data field "2" - RTDs data:
 * RTDSensor1Channel0 - 32 Bits
 * RTDSensor1Channel1 - 32 Bits
 * RTDSensor1Channel2 - 32 Bits
+ 
+Structure of user data field "3" - Internal ADC data:
+* ADCSensor0 - 16 Bits
+* ADCSensor1 - 16 Bits
+* ADCSensor2 - 16 Bits
+* ADCSensor3 - 16 Bits
+* ADCSensor4 - 16 Bits
+* ADCSensor5 - 16 Bits
+* ADCSensor6 - 16 Bits
+* ADCSensor7 - 16 Bits
+* ADCSensor8 - 16 Bits
+* ADCSensor9 - 16 Bits

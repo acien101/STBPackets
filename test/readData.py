@@ -35,6 +35,26 @@ STBP_ADC = Struct(
   "ADC9" / Int16ul
 )
 
+# Create data structures
+STBP_LSDATA = ByteSwapped(BitStruct(
+  "LS0" / BitsInteger(1),
+  "LS1" / BitsInteger(1),
+  "LS2" / BitsInteger(1),
+  "LS3" / BitsInteger(1),
+  "LS4" / BitsInteger(1),
+  "LS5" / BitsInteger(1),
+  "LS6" / BitsInteger(1),
+  "LS7" / BitsInteger(1),
+  "LS8" / BitsInteger(1),
+  "LS9" / BitsInteger(1),
+  "LS10" / BitsInteger(1),
+  "LS11" / BitsInteger(1),
+  "LS12" / BitsInteger(1),
+  "PAD0" / Padding(1),
+  "PAD1" / Padding(1),
+  "PAD2" / Padding(1),
+))
+
 STBP_CRC = Struct(
   "CRC" / Int16ul
 )
@@ -62,10 +82,13 @@ try:
     if prim_header.APID == 2:
       ser_in_userdata = ser.read(STBP_RTD.sizeof())
       userdata = STBP_RTD.parse(ser_in_userdata)
-    else:
+    elif prim_header.APID == 3:
       ser_in_userdata = ser.read(STBP_ADC.sizeof())
       userdata = STBP_ADC.parse(ser_in_userdata)
-
+    else:
+      ser_in_userdata = ser.read(STBP_LSDATA.sizeof())
+      userdata = STBP_LSDATA.parse(ser_in_userdata)
+  
     ser_in_crc = ser.read(STBP_CRC.sizeof())
     crc = STBP_CRC.parse(ser_in_crc)
 

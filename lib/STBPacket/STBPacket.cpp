@@ -109,6 +109,12 @@ void STBPacket::setInternalADCData(uint16_t* adcData){
   }
 }
 
+void STBPacket::setLSData(uint16_t data){
+  uint16_t* mv_p = (uint16_t*) userDataBuff;
+  memcpy(mv_p, &data, STBP_TM_LSDATA_LENGTH_B);
+}
+
+
 uint16_t STBPacket::gen_checksum(uint8_t const *data, int size) {     
   uint16_t sum = 0;
   size_t even_size = size - size%2;
