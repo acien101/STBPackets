@@ -24,7 +24,7 @@ Secondary header:
 * TIME - 32 Bits - Defines the time when this packet was created in microseconds. It is reference with the time it started the microcontroller.
 
 The PACKET DATA field is defined as:
-* Packet Secondary header
+* Packet Secondary header (if present)
 * USER DATA FIELD
 * CRC - 16 Bits - CRC of the packet
 
@@ -32,6 +32,7 @@ The user data field can have different shapes, depends on the APID:
 * 0 - Load switches data - Data collected from the Load Switches.
 * 1 - Mux Board data - Data collected from the Mux Board
 * 2 - RTDs data - Data collected from all the channels of the RTDs PCBs.
+* 3 - Internal ADC data - Data collected from the internal ADCs.
 
 Structure of user data field "0" - Load switches data:
 * LS0 - 1 Bit - Load Switch 0 status
@@ -73,3 +74,32 @@ Structure of user data field "3" - Internal ADC data:
 * ADCSensor7 - 16 Bits
 * ADCSensor8 - 16 Bits
 * ADCSensor9 - 16 Bits
+
+## TELECOMMANDS Packets
+
+They have the same HEADER.
+
+The secondary header is discarted.
+
+The APID can change for these values:
+* 0 - Change status Load Switch
+* 1 - Build sequence
+* 2 - Start sequence
+* 3 - Stop sequence
+
+For APID 0 - Change status Load switch, the user data field is:
+* DEVICE ID - 8 bits
+* VALUE - 24 bits
+
+For APID 1 - Build sequence, the user data field is:
+* DEVICEID0 - 8 Bits
+* VALUE0 - 24 Bits
+* SEQUENCE ...
+* DEVICEID_N - 8 Bits
+* VALUE_N - 24 Bits
+
+For APID 2 - Start sequence, the user data field is:
+* PADDING - 8 Bits
+  
+For APID 2 - Stop sequence, the user data field is:
+* PADDING - 8 Bits

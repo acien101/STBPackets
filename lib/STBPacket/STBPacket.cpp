@@ -1,5 +1,13 @@
 #include "STBPacket.h"
 
+STBPacket::STBPacket(){
+  this->primHeader = {0};
+  this->secHeader = {0};
+
+  // Set user data to 0
+  memcpy(userDataBuff, 0, sizeof(userDataBuff));
+}
+
 /**
  * Constructor used to create a STBPacket. The easier way is to send the headers structures
 */
@@ -38,7 +46,7 @@ uint8_t STBPacket::setUserData(uint8_t* data, size_t size){
 uint8_t STBPacket::getUserDataLength(){
   uint8_t res = 0;
 
-  res = primHeader.length + 1;
+  res = primHeader.length - STBP_CRC_LENGTH_B + 1;
 
   if(primHeader.sech == STBP_SECH_PRESENT) res -= STBP_SECHEADER_LENGTH_B;
 
@@ -125,4 +133,76 @@ uint16_t STBPacket::gen_checksum(uint8_t const *data, int size) {
     sum += data[size-1];
   }
   return sum;
+}
+
+/**
+ * Helper function to decode header from a pointer
+*/
+void STBPacket::parseHeader(uint16_t* data){
+  primHeader.type = ( *data >> STBP_TYPE_OFFSET ) & STBP_TYPE_MASK;
+  primHeader.apid = ( *data >> STBP_APID_OFFSET ) & STBP_APID_MASK;
+  primHeader.sech = ( *data >> STBP_SECH_OFFSET ) & STBP_SECH_MASK;
+  primHeader.length = ( *data >> STBP_LENGTH_OFFSET ) & STBP_LENGTH_MASK;
+}
+
+void STBPacket::parseSecHeader(uint8_t* data){
+  memcpy(&secHeader, data, STBP_SECHEADER_LENGTH_B);
+}
+
+void STBPacket::parseTCUserData(uint8_t* data){
+  // Calculate length to read
+  uint8_t length = primHeader.length - STBP_CRC_LENGTH_B + 1;
+  // If secondary header was counter, we need to substract it
+  if(primHeader.sech) length -= STBP_SECH_SIZE;
+
+  memcpy(userDataBuff, data, length);
+
+  /*
+  // ANOTHER WAY TO DO IT LESS EFFICIENT
+  switch (primHeader.apid){
+  case STBP_APID_TC_LSSTATUS:
+    memcpy(userDataBuff, data, STBP_TC_LSSTATUS_LENGTH_B);
+    break;
+  case STBP_APID_TC_BUILDSEQ:
+    // TELECOMMAND BUILD SEQUENCE is a sequence of device status
+    // Read from the length parameter and copy to user field
+    break;
+  case STBP_APID_TC_STARTSEQ:
+    memcpy(userDataBuff, data, STBP_TC_STARTSEQ_LENGTH_B);
+    break;
+  case STBP_APID_TC_STOPSEQ:
+    memcpy(userDataBuff, data, STBP_TC_STOPSEQ_LENGTH_B);
+    break;
+  default:
+    break;
+  }
+  */
+
+  
+}
+
+STBP_HEADER_S STBPacket::getPrimHeader(){
+  return primHeader;
+}
+
+STBP_SECH_S STBPacket::getSecHeader(){
+  return secHeader;
+}
+
+/**
+ * Check if the CRC from the packet match the received CRC.
+ * Return 1 if correct, return 0 if incorrect 
+*/
+uint8_t STBPacket::checkCRC(uint16_t* data){
+  // Create a packet with the data and check if it match
+  uint8_t packet_buff[STBP_HEADER_LENGTH_B + primHeader.length + 1] = {0}; // Without CRC
+  buildPacket(packet_buff);
+
+  uint16_t calc_crc = gen_checksum(packet_buff, sizeof(packet_buff) - STBP_CRC_LENGTH_B);
+
+  uint16_t received_crc = *(data);
+
+  // TODO: THE CRC IS NOT CORRECT BECAUSE THE USER DATA IS NOT CORRECTLY DECODED
+
+  return calc_crc == received_crc;
 }

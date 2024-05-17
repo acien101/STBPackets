@@ -11,11 +11,79 @@ void setup() {
   
   //sendRTDData();
   //sendInternalADCData();
-  sendLSData();
+  //sendLSData();
 }
 
+uint8_t buff[256] = {0};
+
 void loop() {
-  // put your main code here, to run repeatedly:
+  if(Serial.available() >= STBP_HEADER_LENGTH_B){
+    // Create a STBP packet
+    STBPacket packet = STBPacket();
+    Serial.println("Received a byte");
+    uint32_t available = Serial.available();
+    Serial.println(String(available));
+
+    // If there is data read the header
+    uint8_t val = 0;
+
+    if(val = Serial.readBytes(buff, STBP_HEADER_LENGTH_B) != STBP_HEADER_LENGTH_B){
+      Serial.print("Could not read the packet. Flushing and repeating. Could read ");
+      Serial.print(String(val));
+      Serial.flush();
+      return;
+    }
+
+    //available = Serial.available();
+    //Serial.println(String(available));
+    //Serial.println(String(val));
+
+    // TODO: Check if the readed values make sense
+
+
+    packet.parseHeader((uint16_t*) buff);
+
+    // If there is secondary header read it
+    if(packet.getPrimHeader().sech){
+      Serial.readBytes(buff, STBP_SECHEADER_LENGTH_B);
+      packet.parseSecHeader((uint8_t*) buff);
+    }
+
+    // Read the user data field
+    // Calculate length to read
+    uint8_t userDataLength = packet.getUserDataLength();
+
+    // Wait til I got all the data
+    while(Serial.available() < userDataLength){
+
+    }
+    
+    if(val = Serial.readBytes(buff, userDataLength) != userDataLength){
+      Serial.print("Could not read the packet. Flushing and repeating. Could read ");
+      Serial.print(String(val));
+      Serial.flush();
+      return;
+    }
+
+    //Serial.println(String(val));
+    packet.parseTCUserData(buff);
+
+    // Wait until I have received the rest
+    while(Serial.available() < STBP_CRC_LENGTH_B){
+
+    }
+
+    // Read the checksum (CRC) and confirm that is correct
+    Serial.readBytes(buff, STBP_CRC_LENGTH_B);
+    if(packet.checkCRC((uint16_t*) buff) == 0){
+      Serial.println("Incorrect checksum, flush data");
+      Serial.flush();
+    }
+
+    int i = 0 ;
+
+    Serial.println("Received ");
+  }
 }
 
 void sendRTDData(){

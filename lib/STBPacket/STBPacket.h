@@ -22,7 +22,14 @@
 #define STBP_SECH_OFFSET 8
 #define STBP_LENGTH_OFFSET 0
 
-// Define specific Data Field User Packets
+// Define MASKS
+
+#define STBP_TYPE_MASK 0b1
+#define STBP_APID_MASK 0b111111
+#define STBP_SECH_MASK 0b1
+#define STBP_LENGTH_MASK 0xFF
+
+// Define specific Data Field User Packets TELEMETRY
 
 #define STBP_TM_RTDDATA_LENGTH_B 18   // Bytes
 #define STBP_TM_RTDDATA_OFFSET 24     // Offset in bits of each element
@@ -32,6 +39,13 @@
 #define STBP_TM_IADCDATA_BYTES_ELEMENT 2
 
 #define STBP_TM_LSDATA_LENGTH_B 2    // Bytes
+
+// Define specific Data Field User Packets TELECOMMANDS
+
+#define STBP_TC_LSSTATUS_LENGTH_B 4
+#define STBP_TC_STARTSEQ_LENGTH_B 1
+#define STBP_TC_STOPSEQ_LENGTH_B 1
+
 
 // Define ENUMS
 
@@ -51,6 +65,13 @@ typedef enum {
   STBP_APID_TM_RTDDATA = 2,
   STBP_APID_TM_IADCDATA = 3,        // Internal ADC Data
 } STBP_APID_TM_E;  // APID ENUM
+
+typedef enum {
+  STBP_APID_TC_LSSTATUS = 0,
+  STBP_APID_TC_BUILDSEQ = 1,
+  STBP_APID_TC_STARTSEQ = 2,
+  STBP_APID_TC_STOPSEQ = 3,
+} STBP_APID_TC_E;  // APID ENUM
 
 // Structures types
 
@@ -74,6 +95,8 @@ class STBPacket {
   public:
     STBPacket();
     STBPacket(STBP_HEADER_S primHeader, STBP_SECH_S secHeader);
+    STBP_HEADER_S getPrimHeader();
+    STBP_SECH_S getSecHeader();
     uint8_t setPrimHeader(STBP_HEADER_S primHeader);
     uint8_t setSecHeader(STBP_SECH_S secHeader);
     void setRTDData(uint32_t rtd0ch0, uint32_t rtd0ch1, uint32_t rtd0ch2, 
@@ -82,8 +105,12 @@ class STBPacket {
     void setLSData(uint16_t data);
     uint8_t setUserData(uint8_t* data, size_t size);
     uint8_t buildPacket(uint8_t* dst);
-  private:
+    void parseHeader(uint16_t* data);
+    void parseSecHeader(uint8_t* data);
+    void parseTCUserData(uint8_t* data);
     uint8_t getUserDataLength();
+    uint8_t checkCRC(uint16_t* data);
+  private:
     uint16_t gen_checksum(uint8_t const *data, int size);
 };
 
