@@ -41,7 +41,7 @@ def gen_BUILDSEQ_CMD():
     TYPE = 1,   # CMD
     APID = 1,   # Build sequence
     SECH = 0,
-    LENGTH = (STBP_TC_SEQ_ELEMENT.sizeof()*len(cmds)) - 1    # Count the CRC
+    LENGTH = (STBP_TC_SEQ_ELEMENT.sizeof()*len(cmds)) + 2 - 1
   ))
   STBP_TC_BUILDSEQ = Array(len(cmds), STBP_TC_SEQ_ELEMENT)
   userDataField = STBP_TC_BUILDSEQ.build(cmds)
@@ -86,8 +86,10 @@ baud_rate = 9600  # Change this to match the baud rate of your device
 # Create a serial object
 ser = serial.Serial(serial_port, baud_rate)
 
-ser.write(gen_LS_CMD())
+packet = gen_BUILDSEQ_CMD()
 
-print(gen_LS_CMD())
+ser.write(packet)
+
+print(packet)
 
 ser.close()
