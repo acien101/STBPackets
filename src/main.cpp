@@ -2,9 +2,13 @@
 
 #include "STBPacket.h"
 
+#define DEBUG true
+
 void sendRTDData();
 void sendInternalADCData();
 void sendLSData();
+
+uint8_t buff[256] = {0};
 
 void setup() {
   Serial.begin(9600);
@@ -14,76 +18,111 @@ void setup() {
   //sendLSData();
 }
 
-uint8_t buff[256] = {0};
+/**
+ * Use to clean the incomming serial
+*/
+void serialFlush(){
+  while(Serial.available() > 0) {
+    char t = Serial.read();
+  }
+}
 
-void loop() {
+/**
+ * Function to receive serial data, it waits for the data to arrive
+ * Return 0 if perfect, 1 if there was an error
+*/
+void serialGetBuffer(uint8_t* buff, size_t size){
+  uint8_t* buff_mp = buff;    // Moving pointer
+  size_t size_cnt = 0;    // Counter for the size
+  do{
+    // Wait to receive the first byte
+    while(!Serial.available()){
+      delay(10);
+    }
+    *(buff_mp++) = Serial.read();    // Increment the counter
+    size_cnt++;
+  }while(size_cnt < size);
+}
+
+// When reading commands it should be in the next way:
+// 1. Wait until there are necessary packets for reading the header
+// 2. Read packets of the header. If there are not necessary packets, flush and repeat.
+// 3. From the header take the length of the rest of the packet. Wait to receive the information.
+// 4. Receive the packets, if there are not enough, then flush and repeat.
+// 5. Decode the packet
+// 6. Check CRC, if is not valid, then flush all the data, and repeat.
+
+void refresh(){
+  uint8_t* m_p;   // Moving pointer
+
   if(Serial.available() >= STBP_HEADER_LENGTH_B){
     // Create a STBP packet
     STBPacket packet = STBPacket();
-    Serial.println("Received a byte");
-    uint32_t available = Serial.available();
-    Serial.println(String(available));
+
+    if(DEBUG){
+      Serial.print("Receiving a STBPacket with ");
+      Serial.print(String(Serial.available()));
+      Serial.println(" bytes");
+    }
+    
 
     // If there is data read the header
-    uint8_t val = 0;
-
-    if(val = Serial.readBytes(buff, STBP_HEADER_LENGTH_B) != STBP_HEADER_LENGTH_B){
-      Serial.print("Could not read the packet. Flushing and repeating. Could read ");
-      Serial.print(String(val));
-      Serial.flush();
+    if(Serial.readBytes(buff, STBP_HEADER_LENGTH_B) != STBP_HEADER_LENGTH_B){
+      if (DEBUG){
+        Serial.print("Could not read the packet. Flushing and repeating.");
+      }
+      
+      delay(10);     // Wait to receive all the packets and flush them
+      serialFlush();
       return;
     }
 
-    //available = Serial.available();
-    //Serial.println(String(available));
-    //Serial.println(String(val));
-
-    // TODO: Check if the readed values make sense
-
-
+    // Decode STBPacker Header
     packet.parseHeader((uint16_t*) buff);
+
+    // Wait to receive the rest of the packet
+    // Read the user data field
+    // Calculate length to read
+    uint8_t dataLength = packet.getPrimHeader().length + 1;
+
+    serialGetBuffer(buff, dataLength);  // Read data while waiting for incoming data
+
+    // Point to the beggining of the buffer
+    // The pointer is used to read different parts of the packet
+    m_p = buff;
 
     // If there is secondary header read it
     if(packet.getPrimHeader().sech){
-      Serial.readBytes(buff, STBP_SECHEADER_LENGTH_B);
-      packet.parseSecHeader((uint8_t*) buff);
+      packet.parseSecHeader((uint8_t*) m_p);
+      // Move pointer of the buffer
+      m_p = m_p + STBP_SECHEADER_LENGTH_B;
     }
 
-    // Read the user data field
-    // Calculate length to read
-    uint8_t userDataLength = packet.getUserDataLength();
+    // Parse User Data fied
+    packet.parseTCUserData(m_p);
+    m_p = m_p + packet.getUserDataLength();    // Move pointer of the buffer
 
-    // Wait til I got all the data
-    while(Serial.available() < userDataLength){
-
-    }
+    // Read the checksum (CRC) and confirm that is correct
     
-    if(val = Serial.readBytes(buff, userDataLength) != userDataLength){
-      Serial.print("Could not read the packet. Flushing and repeating. Could read ");
-      Serial.print(String(val));
-      Serial.flush();
+    if(packet.checkCRC((uint16_t*) m_p) == 0){
+      if (DEBUG){
+        Serial.println("Incorrect checksum, flush data");
+      }
+      
+      delay(10);     // Wait to receive all the packets and flush them
+      serialFlush();
       return;
     }
 
-    //Serial.println(String(val));
-    packet.parseTCUserData(buff);
-
-    // Wait until I have received the rest
-    while(Serial.available() < STBP_CRC_LENGTH_B){
-
+    if (DEBUG){
+      Serial.println("Packet received completly");
+      packet.printPacket();
     }
-
-    // Read the checksum (CRC) and confirm that is correct
-    Serial.readBytes(buff, STBP_CRC_LENGTH_B);
-    if(packet.checkCRC((uint16_t*) buff) == 0){
-      Serial.println("Incorrect checksum, flush data");
-      Serial.flush();
-    }
-
-    int i = 0 ;
-
-    Serial.println("Received ");
   }
+}
+
+void loop() {
+  refresh();
 }
 
 void sendRTDData(){

@@ -20,8 +20,8 @@ def gen_LS_CMD():
     LENGTH = STBP_TC_LSSTATUS.sizeof() + 2 - 1    # Count the CRC
   ))
   userDataField = STBP_TC_LSSTATUS.build(dict(
-    DEVICE_ID = 0,
-    VALUE = 1
+    DEVICE_ID = 3,
+    VALUE = 19
   ))
   # Concatenate header and user data field
   packet_no_crc = header + userDataField
@@ -80,7 +80,7 @@ def gen_STOPSEQ_CMD():
   return packet
 
 # Define the serial port and baud rate
-serial_port = '/dev/tty.usbmodem1461403'  # Change this to the appropriate port on your system
+serial_port = '/dev/tty.usbmodem1461303'  # Change this to the appropriate port on your system
 baud_rate = 9600  # Change this to match the baud rate of your device
 
 # Create a serial object

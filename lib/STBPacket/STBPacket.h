@@ -110,6 +110,8 @@ class STBPacket {
     void parseTCUserData(uint8_t* data);
     uint8_t getUserDataLength();
     uint8_t checkCRC(uint16_t* data);
+    void printHeader();
+    void printPacket();
   private:
     uint16_t gen_checksum(uint8_t const *data, int size);
 };

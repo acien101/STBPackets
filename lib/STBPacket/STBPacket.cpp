@@ -198,6 +198,7 @@ uint8_t STBPacket::checkCRC(uint16_t* data){
   uint8_t packet_buff[STBP_HEADER_LENGTH_B + primHeader.length + 1] = {0}; // Without CRC
   buildPacket(packet_buff);
 
+  // If the packet is corrupted, it can enter in infinite loop
   uint16_t calc_crc = gen_checksum(packet_buff, sizeof(packet_buff) - STBP_CRC_LENGTH_B);
 
   uint16_t received_crc = *(data);
@@ -205,4 +206,34 @@ uint8_t STBPacket::checkCRC(uint16_t* data){
   // TODO: THE CRC IS NOT CORRECT BECAUSE THE USER DATA IS NOT CORRECTLY DECODED
 
   return calc_crc == received_crc;
+}
+
+void STBPacket::printHeader(){
+  Serial.println("Primary Header:");
+  Serial.print("  Type: ");
+  Serial.println(primHeader.type, BIN);
+  Serial.print("  APID: ");
+  Serial.println(primHeader.apid, BIN);
+  Serial.print("  Secondary Header Flag: ");
+  Serial.println(primHeader.sech, BIN);
+  Serial.print("  Length: ");
+  Serial.println(primHeader.length, DEC);
+}
+
+void STBPacket::printPacket(){
+  printHeader();
+
+  if(primHeader.sech){
+    Serial.println("Secondary Header:");
+    Serial.print("  Time: ");
+    Serial.println(secHeader.time, DEC);
+  }
+  
+  Serial.println("User Data Buffer:");
+  for (int i = 0; i < getUserDataLength(); ++i) {
+    Serial.print("  Byte ");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(userDataBuff[i], HEX);
+  }
 }
