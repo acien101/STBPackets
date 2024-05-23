@@ -11,10 +11,10 @@ void sendLSData();
 uint8_t buff[256] = {0};
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   
   //sendRTDData();
-  //sendInternalADCData();
+  sendInternalADCData();
   //sendLSData();
 }
 

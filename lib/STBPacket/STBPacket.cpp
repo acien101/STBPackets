@@ -156,29 +156,6 @@ void STBPacket::parseTCUserData(uint8_t* data){
   if(primHeader.sech) length -= STBP_SECH_SIZE;
 
   memcpy(userDataBuff, data, length);
-
-  /*
-  // ANOTHER WAY TO DO IT LESS EFFICIENT
-  switch (primHeader.apid){
-  case STBP_APID_TC_LSSTATUS:
-    memcpy(userDataBuff, data, STBP_TC_LSSTATUS_LENGTH_B);
-    break;
-  case STBP_APID_TC_BUILDSEQ:
-    // TELECOMMAND BUILD SEQUENCE is a sequence of device status
-    // Read from the length parameter and copy to user field
-    break;
-  case STBP_APID_TC_STARTSEQ:
-    memcpy(userDataBuff, data, STBP_TC_STARTSEQ_LENGTH_B);
-    break;
-  case STBP_APID_TC_STOPSEQ:
-    memcpy(userDataBuff, data, STBP_TC_STOPSEQ_LENGTH_B);
-    break;
-  default:
-    break;
-  }
-  */
-
-  
 }
 
 STBP_HEADER_S STBPacket::getPrimHeader(){

@@ -81,7 +81,7 @@ def gen_STOPSEQ_CMD():
 
 # Define the serial port and baud rate
 serial_port = '/dev/tty.usbmodem1461303'  # Change this to the appropriate port on your system
-baud_rate = 9600  # Change this to match the baud rate of your device
+baud_rate = 115200  # Change this to match the baud rate of your device
 
 # Create a serial object
 ser = serial.Serial(serial_port, baud_rate)
