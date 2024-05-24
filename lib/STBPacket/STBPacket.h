@@ -40,6 +40,10 @@
 
 #define STBP_TM_LSDATA_LENGTH_B 2    // Bytes
 
+#define STBP_TM_MUX_LENGTH_B 24 // Bytes
+#define STBP_TM_MUX_NUM_ELEMENTS 12 // 16 bits * 12 elements
+#define STBP_TM_MUX_BYTES_ELEMENT 2
+
 // Define specific Data Field User Packets TELECOMMANDS
 
 #define STBP_TC_LSSTATUS_LENGTH_B 4
@@ -61,9 +65,14 @@ typedef enum {
 
 typedef enum {
   STBP_APID_TM_LSDATA = 0,
-  STBP_APID_TM_MUXDATA = 1,
   STBP_APID_TM_RTDDATA = 2,
   STBP_APID_TM_IADCDATA = 3,        // Internal ADC Data
+  STBP_APID_TM_MUX_TEMPIC_CHAMBER = 4,
+  STBP_APID_TM_MUX_TEMPIC_LH = 5,
+  STBP_APID_TM_MUX_ADCTC0_CHAMBER = 6,
+  STBP_APID_TM_MUX_ADCTC1_CHAMBER = 7,
+  STBP_APID_TM_MUX_ADCTC0_LH = 8,
+  STBP_APID_TM_MUX_ADCTC1_LH = 9,
 } STBP_APID_TM_E;  // APID ENUM
 
 typedef enum {
@@ -112,6 +121,7 @@ class STBPacket {
     uint8_t checkCRC(uint16_t* data);
     void printHeader();
     void printPacket();
+    void setMuxData(uint16_t* data);
   private:
     uint16_t gen_checksum(uint8_t const *data, int size);
 };

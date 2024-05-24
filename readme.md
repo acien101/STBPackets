@@ -30,9 +30,14 @@ The PACKET DATA field is defined as:
 
 The user data field can have different shapes, depends on the APID:
 * 0 - Load switches data - Data collected from the Load Switches.
-* 1 - Mux Board data - Data collected from the Mux Board
 * 2 - RTDs data - Data collected from all the channels of the RTDs PCBs.
 * 3 - Internal ADC data - Data collected from the internal ADCs.
+* 4 - Chamber IC Temperature of each ADS1118 of the mux board
+* 5 - Line heater IC Temperature of each ADS1118 of the mux board
+* 6 - Chamber TC0 ADC value of TC (Thermocouple) of ADS1118 of the mux board
+* 7 - Chamber TC1 ADC value of TC (Thermocouple) of ADS1118 of the mux board
+* 8 - Line heater (LH) TC0 ADC value of TC (Thermocouple) of ADS1118 of the mux board
+* 9 - Line heater (LH) TC1 ADC value of TC (Thermocouple) of ADS1118 of the mux board
 
 Structure of user data field "0" - Load switches data:
 * LS0 - 1 Bit - Load Switch 0 status
@@ -51,9 +56,6 @@ Structure of user data field "0" - Load switches data:
 * PADDING - 1 Bit
 * PADDING - 1 Bit
 * PADDING - 1 Bit
-
-Structure of user data field "1" - Mux Board data:
-* TBD
 
 Structure of user data field "2" - RTDs data:
 * RTDSensor0Channel0 - 32 Bits
@@ -74,6 +76,34 @@ Structure of user data field "3" - Internal ADC data:
 * ADCSensor7 - 16 Bits
 * ADCSensor8 - 16 Bits
 * ADCSensor9 - 16 Bits
+
+Structure of user data field "4" and "5" are the Temperature of each ADS1118 of the mux board. 4 for the Chamber, and 5 for the line heater:
+* TempICCH1 - 16 Bits
+* TempICCH2 - 16 Bits
+* TempICCH3 - 16 Bits
+* TempICCH4 - 16 Bits
+* TempICCH5 - 16 Bits
+* TempICCH6 - 16 Bits
+* TempICCH7 - 16 Bits
+* TempICCH8 - 16 Bits
+* TempICCH9 - 16 Bits
+* TempICCH10 - 16 Bits
+* TempICCH11 - 16 Bits
+* TempICCH12 - 16 Bits
+
+Structure of user data field "6", "7", "8", "9" are the ADC value of TC (Thermocouple) of ADS1118 of the mux board. 6 is the TC0 of the chamber, 7 is the TC1 of the chamber, 8 is the TC0 of the line heater, 9 is the TC1 of the line heater:
+* ADCCH1 - 16 Bits
+* ADCCH2 - 16 Bits
+* ADCCH3 - 16 Bits
+* ADCCH4 - 16 Bits
+* ADCCH5 - 16 Bits
+* ADCCH6 - 16 Bits
+* ADCCH7 - 16 Bits
+* ADCCH8 - 16 Bits
+* ADCCH9 - 16 Bits
+* ADCCH10 - 16 Bits
+* ADCCH11 - 16 Bits
+* ADCCH12 - 16 Bits
 
 ## TELECOMMANDS Packets
 

@@ -117,6 +117,18 @@ void STBPacket::setInternalADCData(uint16_t* adcData){
   }
 }
 
+/**
+ * Set the data of the Mux board telemetry packets. param data is an array of 12 variables.
+*/
+void STBPacket::setMuxData(uint16_t* data){
+  uint16_t* mv_p = (uint16_t*) userDataBuff;
+  memset(mv_p, 0, STBP_TM_MUX_LENGTH_B);
+
+  for(uint8_t i = 0; i < STBP_TM_MUX_NUM_ELEMENTS; i++){
+    memcpy(mv_p++, data++, STBP_TM_MUX_BYTES_ELEMENT);
+  }
+}
+
 void STBPacket::setLSData(uint16_t data){
   uint16_t* mv_p = (uint16_t*) userDataBuff;
   memcpy(mv_p, &data, STBP_TM_LSDATA_LENGTH_B);

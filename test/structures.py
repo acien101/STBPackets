@@ -38,6 +38,36 @@ STBP_TM_ADC = Struct(
   "ADC9" / Int16ul
 )
 
+STBP_TM_MUX_TEMPIC = Struct(
+  "TempICCH1" / Int16ul,
+  "TempICCH2" / Int16ul,
+  "TempICCH3" / Int16ul,
+  "TempICCH4" / Int16ul,
+  "TempICCH5" / Int16ul,
+  "TempICCH6" / Int16ul,
+  "TempICCH7" / Int16ul,
+  "TempICCH8" / Int16ul,
+  "TempICCH9" / Int16ul,
+  "TempICCH10" / Int16ul,
+  "TempICCH11" / Int16ul,
+  "TempICCH12" / Int16ul
+)
+
+STBP_TM_MUX_ADC = Struct(
+  "ADCCH1" / Int16ul,
+  "ADCCH2" / Int16ul,
+  "ADCCH3" / Int16ul,
+  "ADCCH4" / Int16ul,
+  "ADCCH5" / Int16ul,
+  "ADCCH6" / Int16ul,
+  "ADCCH7" / Int16ul,
+  "ADCCH8" / Int16ul,
+  "ADCCH9" / Int16ul,
+  "ADCCH10" / Int16ul,
+  "ADCCH11" / Int16ul,
+  "ADCCH12" / Int16ul
+)
+
 # Create data structures
 STBP_TM_LSDATA = ByteSwapped(BitStruct(
   "LS0" / BitsInteger(1),

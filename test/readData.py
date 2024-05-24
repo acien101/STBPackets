@@ -26,15 +26,21 @@ try:
       ser_in_secheader = ser.read(STBP_SECH.sizeof())
       secheader = STBP_SECH.parse(ser_in_secheader)
 
-    if prim_header.APID == 2:
+    if prim_header.APID == 0:
+      ser_in_userdata = ser.read(STBP_TM_LSDATA.sizeof())
+      userdata = STBP_TM_LSDATA.parse(ser_in_userdata)
+    elif prim_header.APID == 2:
       ser_in_userdata = ser.read(STBP_TM_RTD.sizeof())
       userdata = STBP_TM_RTD.parse(ser_in_userdata)
     elif prim_header.APID == 3:
       ser_in_userdata = ser.read(STBP_TM_ADC.sizeof())
       userdata = STBP_TM_ADC.parse(ser_in_userdata)
-    else:
-      ser_in_userdata = ser.read(STBP_TM_LSDATA.sizeof())
-      userdata = STBP_TM_LSDATA.parse(ser_in_userdata)
+    elif prim_header.APID == 4 or prim_header.APID == 5:
+      ser_in_userdata = ser.read(STBP_TM_MUX_TEMPIC.sizeof())
+      userdata = STBP_TM_MUX_TEMPIC.parse(ser_in_userdata)
+    elif prim_header.APID == 6 or prim_header.APID == 7 or prim_header.APID == 8 or prim_header.APID == 9:
+      ser_in_userdata = ser.read(STBP_TM_MUX_ADC.sizeof())
+      userdata = STBP_TM_MUX_ADC.parse(ser_in_userdata)
   
     ser_in_crc = ser.read(STBP_CRC.sizeof())
     crc = STBP_CRC.parse(ser_in_crc)

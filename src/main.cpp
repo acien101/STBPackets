@@ -7,6 +7,8 @@
 void sendRTDData();
 void sendInternalADCData();
 void sendLSData();
+void sendMuxICTemp();
+void sendMuxADC();
 
 uint8_t buff[256] = {0};
 
@@ -14,8 +16,10 @@ void setup() {
   Serial.begin(115200);
   
   //sendRTDData();
-  sendInternalADCData();
+  //sendInternalADCData();
   //sendLSData();
+  sendMuxICTemp();
+  sendMuxADC();
 }
 
 /**
@@ -144,7 +148,7 @@ void sendRTDData(){
 }
 
 void sendInternalADCData(){
-    // Calculate length
+  // Calculate length
   size_t lengthField = STBP_SECHEADER_LENGTH_B + STBP_TM_IADCDATA_LENGTH_B + STBP_CRC_LENGTH_B - 1;
 
   // Create Header
@@ -185,6 +189,54 @@ void sendLSData(){
 // 0x8080 is LS0 and LS8
 
   myPacket.setLSData(exampleData);
+
+  myPacket.buildPacket(packet_buff);
+  Serial.write(packet_buff, sizeof(packet_buff));
+}
+
+void sendMuxICTemp(){
+  // Calculate length
+  size_t lengthField = STBP_SECHEADER_LENGTH_B + STBP_TM_MUX_LENGTH_B + STBP_CRC_LENGTH_B - 1;
+
+  // Create Header
+  STBP_HEADER_S primHeader = {STBP_TYPE_TELEMETRY, STBP_APID_TM_MUX_TEMPIC_CHAMBER, STBP_SECH_PRESENT, lengthField};
+
+  STBP_SECH_S secHeader = {micros()};
+
+  uint8_t packet_buff[STBP_HEADER_LENGTH_B + lengthField + 1] = {0};
+
+  STBPacket myPacket = STBPacket(primHeader, secHeader);
+  
+  uint16_t simTempIC[STBP_TM_MUX_NUM_ELEMENTS];
+  for(int i = 0; i < STBP_TM_MUX_NUM_ELEMENTS; i++){
+    simTempIC[i] = i;
+  }
+
+  myPacket.setMuxData(simTempIC);
+
+  myPacket.buildPacket(packet_buff);
+  Serial.write(packet_buff, sizeof(packet_buff));
+}
+
+void sendMuxADC(){
+    // Calculate length
+  size_t lengthField = STBP_SECHEADER_LENGTH_B + STBP_TM_MUX_LENGTH_B + STBP_CRC_LENGTH_B - 1;
+
+  // Create Header
+  STBP_HEADER_S primHeader = {STBP_TYPE_TELEMETRY, STBP_APID_TM_MUX_ADCTC0_CHAMBER, STBP_SECH_PRESENT, lengthField};
+
+  STBP_SECH_S secHeader = {micros()};
+
+  uint8_t packet_buff[STBP_HEADER_LENGTH_B + lengthField + 1] = {0};
+
+  STBPacket myPacket = STBPacket(primHeader, secHeader);
+  
+  uint16_t simTempIC[STBP_TM_MUX_NUM_ELEMENTS];
+  for(int i = 0; i < STBP_TM_MUX_NUM_ELEMENTS; i++){
+    simTempIC[i] = i;
+  }
+
+  myPacket.setMuxData(simTempIC);
 
   myPacket.buildPacket(packet_buff);
   Serial.write(packet_buff, sizeof(packet_buff));
