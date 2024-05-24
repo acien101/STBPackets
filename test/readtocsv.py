@@ -32,14 +32,11 @@ def tm_to_csv(prim_header, secheader, userdata, filename):
   f.close()
 
 def gen_checksum(data):
-  sum = 0
-  size = len(data)
-  even_size = size - size % 2
-  for i in range(0, even_size, 2):
-    sum += data[i] + 256 * data[i+1]
-  if even_size < size:
-    sum += data[size-1]
-  return sum
+  sum_value = 0
+  for byte in data:
+    sum_value += byte
+  return sum_value % 65536
+
 
 # Create data structure
 # Get current date and time

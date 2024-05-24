@@ -125,14 +125,12 @@ void STBPacket::setLSData(uint16_t data){
 
 uint16_t STBPacket::gen_checksum(uint8_t const *data, int size) {     
   uint16_t sum = 0;
-  size_t even_size = size - size%2;
-  for (int i = 0; i < even_size; i+=2) {
-    sum += data[i] + 256 * data[i+1];
+
+  for (size_t i = 0; i < size; ++i) {
+    sum += data[i];
   }
-  if (even_size < size) {
-    sum += data[size-1];
-  }
-  return sum;
+
+  return (uint16_t)(sum % 65536);
 }
 
 /**
